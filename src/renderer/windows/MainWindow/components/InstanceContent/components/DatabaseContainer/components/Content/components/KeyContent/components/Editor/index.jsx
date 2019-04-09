@@ -163,8 +163,7 @@ class Editor extends React.PureComponent {
         onChange={this.updateContent.bind(this, 'json')}
         options={{
           mode: {
-            name: 'javascript',
-            json: true
+            name: 'javascript'
           },
           tabSize: 2,
           indentWithTabs: true,
@@ -242,13 +241,10 @@ export default Editor
 
 function tryFormatJSON(jsonString, beautify) {
   try {
-    const o = JSON.parse(jsonString)
-    if (o && typeof o === 'object' && o !== null) {
-      if (beautify) {
-        return JSON.stringify(o, null, '\t')
-      }
-      return JSON.stringify(o)
+    if(beautify) {
+      return require('util').inspect(JSON.parse(jsonString), {depth: null, breakLength: 300, maxArrayLength: null})
     }
+    return JSON.stringify(eval('(' + jsonString + ')'))
   } catch (e) { /**/ }
 
   return false
