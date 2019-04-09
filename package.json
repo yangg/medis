@@ -24,7 +24,7 @@
     "jquery": "^3.3.1",
     "medis-react-codemirror": "^1.1.0",
     "redis-commands": "^1.4.0",
-    "ssh2": "^0.6.2"
+    "ssh2": "^0.8.2"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
