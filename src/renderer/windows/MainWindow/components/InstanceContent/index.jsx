@@ -17,22 +17,41 @@ class InstanceContent extends PureComponent {
       this.activeElement = document.activeElement
       this.setState({modal})
 
-      return new Promise((resolve, reject) => {
-        this.promise = {resolve, reject}
-      })
+      this.callbacks = []
+      const obj = {
+        then: (callback) => {
+          this.callbacks.push(['then', callback])
+          return obj
+        },
+        catch: (callback) => {
+          this.callbacks.push(['catch', callback])
+          return obj
+        }
+      }
+      return obj
     }
   }
 
-  modalSubmit(result) {
-    this.promise.resolve(result)
-    this.setState({modal: null})
-    if (this.activeElement) {
-      this.activeElement.focus()
+  submit(result) {
+    let promise = Promise.resolve(result)
+    for(let i = 0; i < this.callbacks.length; i++) {
+      let callback = this.callbacks[i]
+      promise = promise[callback[0]]((...args) => callback[1](...args))
     }
+    return promise
+  }
+  modalSubmit(result) {
+    // 使用模拟的 promise，then 可以回调多次
+    // 添加 key 失败（The key already exists）时，弹窗不取消
+    this.submit(result).then(() => {
+      this.setState({modal: null})
+      if (this.activeElement) {
+        this.activeElement.focus()
+      }
+    })
   }
 
   modalCancel() {
-    this.promise.reject()
     this.setState({modal: null})
     if (this.activeElement) {
       this.activeElement.focus()
